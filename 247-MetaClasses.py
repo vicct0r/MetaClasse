@@ -25,6 +25,7 @@
 
 
 # Criando uma função __repr__ para chamar dentro da minha MetaClass.
+# A função fornece uma representação de String personalizada de uma instância de uma classe.
 
 def meu_repr(self):
     return f'{type(self).__name__}({self.__dict__})'
@@ -34,6 +35,8 @@ def meu_repr(self):
 # para a criação da minha classe de acordo com as necessidades do algoritmo.
 
 class Meta(type):
+    # O método __new__ cria e retorna a classe
+    # Este método é chamado quando uma nova classe é criada.
     def __new__(mcs, name, bases, dct):
         print('METACLASS NEW')
         cls = super().__new__(mcs, name, bases, dct)
@@ -51,8 +54,17 @@ class Meta(type):
 
         return cls
 
+    # O método __call__ cria e retorna a instância da classe.
+    # __call__ é chamado para criar uma instância, verificando se atributo nome existe na classe.
+    def __call__(cls, *args, **kwargs):
+        instancia = super().__call__(*args, **kwargs)
 
-# Agora aqui está sendo passado minha MetaClass; 
+        if 'nome' not in instancia.__dict__:
+            raise NotImplementedError('Crie o attr nome')
+
+        return instancia
+    
+# Agora aqui está sendo passado minha MetaClass -> (metaclass=Meta); 
 # Ela vai fazer o que foi definido acima antes da criação dessa classe que já está 'instânciada'.
 
 class Pessoa(metaclass=Meta):
@@ -66,6 +78,9 @@ class Pessoa(metaclass=Meta):
         print('MEU INIT')
         self.nome = nome
 
+
+    def falar(self):
+        print('falando...')
 
 
 p1 = Pessoa('Victor')
